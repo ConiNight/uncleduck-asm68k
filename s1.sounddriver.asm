@@ -2729,19 +2729,7 @@ SoundD0:	incbin	"sound/sfx/SndD0 - Waterfall.bin"
 ; ---------------------------------------------------------------------------
 ; 'Sega' chant PCM sample
 ; ---------------------------------------------------------------------------
-		; Don't let Sega sample cross $8000-byte boundary
-		; (DAC driver doesn't switch banks automatically)
-		if (*&$7FFF)+Size_of_SegaPCM>$8000
-			align $8000
-		endc
-SegaPCM:	incbin	"sound/dac/sega.pcm"
+SegaPCM:	incbin	"sound/dac/uncleduck.pcm"
 SegaPCM_End
 		even
-
-		if SegaPCM_End-SegaPCM>$8000
-			inform 3,"Sega sound must fit within $8000 bytes, but you have a $%h byte Sega sound.",SegaPCM_End-SegaPCM
-		endc
-		if SegaPCM_End-SegaPCM>Size_of_SegaPCM
-			inform 3,"Size_of_SegaPCM = $%h, but you have a $%h byte Sega sound.",Size_of_SegaPCM,SegaPCM_End-SegaPCM
-		endc
 
