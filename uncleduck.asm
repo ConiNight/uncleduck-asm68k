@@ -75,8 +75,8 @@ Vectors:	dc.l v_systemstack&$FFFFFF	; Initial stack pointer value
 		dc.l ErrorTrap			; Unused (reserved)
 		dc.b "SEGA MEGA DRIVE " ; Hardware system ID (Console name)
 		dc.b "(C)UNCLEDUCK.UDC" ; Copyright holder and release date (generally year)
-		dc.b "Uncle Duck! Uncle Duck, Uncle Uncle Uncle Duck! " ; Domestic name
-		dc.b "Uncle Duck! Uncle Duck, Uncle Uncle Uncle Duck! " ; International name
+		dc.b "Uncle Duck! Uncle Duck! Uncle Uncle Uncle Duck! " ; Domestic name
+		dc.b "Uncle Duck! Uncle Duck! Uncle Uncle Uncle Duck! " ; International name
 		dc.b "GM UNCLDICK-00" ; Serial/version number (Rev non-0)
 Checksum:
 		dc.w $D8C6
@@ -88,7 +88,7 @@ RomEndLoc:	dc.l EndOfRom-1		; End address of ROM
 		dc.l $20202020
 		dc.l $20202020
 		dc.l $20202020
-		dc.b "                                                    " ; Notes (unused, anything can be put in this space, but it has to be 52 bytes.)
+		dc.b "LET'S DO SOMETHING CRAZY! *uncle ducking everywhere*" ; Notes (unused, anything can be put in this space, but it has to be 52 bytes.)
 		dc.b "JUE             " ; Region (Country code)
 EndOfHeader:
 
