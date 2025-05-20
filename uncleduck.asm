@@ -245,46 +245,16 @@ SetupValues:	dc.w $8000		; VDP register start number
 ; ===========================================================================
 
 GameProgram:
-		tst.w	(vdp_control_port).l
-		btst	#6,($A1000D).l
-		beq.s	CheckSumCheck
-		cmpi.l	#'init',(v_init).w ; has checksum routine already run?
-		beq.w	GameInit	; if yes, branch
-
-CheckSumCheck:
-		movea.l	#EndOfHeader,a0	; start	checking bytes after the header	($200)
-		movea.l	#RomEndLoc,a1	; stop at end of ROM
-		move.l	(a1),d0
-		moveq	#0,d1
-
-	@loop:
-		add.w	(a0)+,d1
-		cmp.l	a0,d0
-		bhs.s	@loop
-		movea.l	#Checksum,a1	; read the checksum
-		cmp.w	(a1),d1		; compare checksum in header to ROM
-		bne.w	CheckSumError	; if they don't match, branch
-
-	CheckSumOk:
-		lea	($FFFFFE00).w,a6
+		lea	($FF0000).l,a6
 		moveq	#0,d7
-		move.w	#$7F,d6
+		move.w	#$3FFF,d6
 	@clearRAM:
 		move.l	d7,(a6)+
-		dbf	d6,@clearRAM	; clear RAM ($FE00-$FFFF)
+		dbf	d6,@clearRAM	; clear RAM ($0000-$FFFF)
 
 		move.b	(z80_version).l,d0
 		andi.b	#$C0,d0
 		move.b	d0,(v_megadrive).w ; get region setting
-		move.l	#'init',(v_init).w ; set flag so checksum won't run again
-
-GameInit:
-		lea	($FF0000).l,a6
-		moveq	#0,d7
-		move.w	#$3F7F,d6
-	@clearRAM:
-		move.l	d7,(a6)+
-		dbf	d6,@clearRAM	; clear RAM ($0000-$FDFF)
 
 		bsr.w	VDPSetupGame
 ; INSERT MEGAPCM
