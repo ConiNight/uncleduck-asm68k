@@ -1,0 +1,113 @@
+Operating system: Microsoft Windows NT 6.2.9200.0
+Opening INI file "C:\Users\conic the cat\Desktop\projects\the vault\uncle duck md\uncleduck-asm68k\SonPLN.ini"...
+Game type is S1.
+Loading Title Card...
+Loading plane mappings from file "tilemaps/Title Card.bin", using compression Enigma...
+Loading palette file "palette/Title Card.bin"...
+Source: 0 Destination: 0 Length: 16
+Loading 8x8 tiles from file "artnem/Title Card.bin", using compression Nemesis...
+Unable to read file "artnem/Title Card.bin" with compression Nemesis:
+Mappings data size does not match given width/height. Expected: 416 (16x13*2) Actual: 1496.
+System.AggregateException: حدث خطأ واحد أو أكثر. ---> SonicRetro.KensSharp.CompressionException: A bit code is already used as a prefix for other codes.
+   عند SonicRetro.KensSharp.Nemesis.DecodingCodeTreeNode.SetCode(Byte code, Int32 length, NibbleRun nibbleRun)
+   عند SonicRetro.KensSharp.Nemesis.DecodeHeader(Stream input, Stream output, DecodingCodeTreeNode codeTree)
+   عند SonicRetro.KensSharp.Nemesis.Decode(Stream input, Stream output)
+   عند SonicRetro.KensSharp.Nemesis.Decompress(Stream input, Stream output)
+   عند SonicRetro.KensSharp.Nemesis.Decompress(String sourceFilePath)
+   عند SonicRetro.SonLVL.API.Compression.Decompress(String file, CompressionType cmp) في C:\Programs\SonLVL\SonLVLAPI\Compression.cs:السطر 51
+   عند SonicRetro.SonLVL.SonPLN.MainForm.LoadLevelTiles() في C:\Programs\SonLVL\SonPLN\MainForm.cs:السطر 368
+   عند System.Threading.Tasks.Task.InnerInvoke()
+   عند System.Threading.Tasks.Task.Execute()
+   --- نهاية تتبع بنية تخزين عناصر الاستثناء الداخلي ---
+   عند System.Threading.Tasks.Task.FastWaitAll(Task[] tasks)
+   عند System.Threading.Tasks.Parallel.Invoke(ParallelOptions parallelOptions, Action[] actions)
+   عند System.Threading.Tasks.Parallel.Invoke(Action[] actions)
+   عند SonicRetro.SonLVL.SonPLN.MainForm.backgroundLevelLoader_DoWork(Object sender, DoWorkEventArgs e) في C:\Programs\SonLVL\SonPLN\MainForm.cs:السطر 323
+---> (الاستثناء الداخلي #0) SonicRetro.KensSharp.CompressionException: A bit code is already used as a prefix for other codes.
+   عند SonicRetro.KensSharp.Nemesis.DecodingCodeTreeNode.SetCode(Byte code, Int32 length, NibbleRun nibbleRun)
+   عند SonicRetro.KensSharp.Nemesis.DecodeHeader(Stream input, Stream output, DecodingCodeTreeNode codeTree)
+   عند SonicRetro.KensSharp.Nemesis.Decode(Stream input, Stream output)
+   عند SonicRetro.KensSharp.Nemesis.Decompress(Stream input, Stream output)
+   عند SonicRetro.KensSharp.Nemesis.Decompress(String sourceFilePath)
+   عند SonicRetro.SonLVL.API.Compression.Decompress(String file, CompressionType cmp) في C:\Programs\SonLVL\SonLVLAPI\Compression.cs:السطر 51
+   عند SonicRetro.SonLVL.SonPLN.MainForm.LoadLevelTiles() في C:\Programs\SonLVL\SonPLN\MainForm.cs:السطر 368
+   عند System.Threading.Tasks.Task.InnerInvoke()
+   عند System.Threading.Tasks.Task.Execute()<---
+
+Loading Title Card...
+Loading 8x8 tiles from file "artnem/Title Card.bin", using compression Nemesis...
+Loading palette file "palette/Title Card.bin"...
+Source: 0 Destination: 0 Length: 16
+Loading plane mappings from file "tilemaps/Title Card.bin", using compression Enigma...
+Mappings data size does not match given width/height. Expected: 416 (16x13*2) Actual: 1496.
+Load completed.
+Loading Title Card...
+Loading 8x8 tiles from file "artnem/Title Card.bin", using compression Nemesis...
+Loading palette file "palette/Title Card.bin"...
+Source: 0 Destination: 0 Length: 16
+Loading plane mappings from file "tilemaps/Title Card.bin", using compression Enigma...
+Load completed.
+Loading Title Card...
+Loading 8x8 tiles from file "artnem/Title Card.bin", using compression Nemesis...
+Loading plane mappings from file "tilemaps/Title Card.bin", using compression Enigma...
+Unable to read file "tilemaps/Title Card.bin" with compression Enigma:
+Loading palette file "palette/Title Card.bin"...
+Source: 0 Destination: 0 Length: 16
+System.AggregateException: حدث خطأ واحد أو أكثر. ---> System.IO.EndOfStreamException: جرت محاولة القراءة بعد نهاية الدفق.
+   عند SonicRetro.KensSharp.BigEndian.Read2(Stream stream)
+   عند SonicRetro.KensSharp.UInt16BE_E_L_InputBitStream.Read(Int32 count)
+   عند SonicRetro.KensSharp.Enigma.Decode(Stream input, Stream output, Endianness endianness)
+   عند SonicRetro.KensSharp.Enigma.Decompress(Stream input, Stream output, Endianness endianness)
+   عند SonicRetro.KensSharp.Enigma.Decompress(String sourceFilePath, Endianness endianness)
+   عند SonicRetro.SonLVL.API.Compression.Decompress(String file, CompressionType cmp) في C:\Programs\SonLVL\SonLVLAPI\Compression.cs:السطر 51
+   عند SonicRetro.SonLVL.SonPLN.MainForm.LoadLevelLayout() في C:\Programs\SonLVL\SonPLN\MainForm.cs:السطر 400
+   عند System.Threading.Tasks.Task.InnerInvoke()
+   عند System.Threading.Tasks.Task.Execute()
+   --- نهاية تتبع بنية تخزين عناصر الاستثناء الداخلي ---
+   عند System.Threading.Tasks.Task.FastWaitAll(Task[] tasks)
+   عند System.Threading.Tasks.Parallel.Invoke(ParallelOptions parallelOptions, Action[] actions)
+   عند System.Threading.Tasks.Parallel.Invoke(Action[] actions)
+   عند SonicRetro.SonLVL.SonPLN.MainForm.backgroundLevelLoader_DoWork(Object sender, DoWorkEventArgs e) في C:\Programs\SonLVL\SonPLN\MainForm.cs:السطر 323
+---> (الاستثناء الداخلي #0) System.IO.EndOfStreamException: جرت محاولة القراءة بعد نهاية الدفق.
+   عند SonicRetro.KensSharp.BigEndian.Read2(Stream stream)
+   عند SonicRetro.KensSharp.UInt16BE_E_L_InputBitStream.Read(Int32 count)
+   عند SonicRetro.KensSharp.Enigma.Decode(Stream input, Stream output, Endianness endianness)
+   عند SonicRetro.KensSharp.Enigma.Decompress(Stream input, Stream output, Endianness endianness)
+   عند SonicRetro.KensSharp.Enigma.Decompress(String sourceFilePath, Endianness endianness)
+   عند SonicRetro.SonLVL.API.Compression.Decompress(String file, CompressionType cmp) في C:\Programs\SonLVL\SonLVLAPI\Compression.cs:السطر 51
+   عند SonicRetro.SonLVL.SonPLN.MainForm.LoadLevelLayout() في C:\Programs\SonLVL\SonPLN\MainForm.cs:السطر 400
+   عند System.Threading.Tasks.Task.InnerInvoke()
+   عند System.Threading.Tasks.Task.Execute()<---
+
+Loading Title Card...
+Loading palette file "palette/Title Card.bin"...
+Source: 0 Destination: 0 Length: 16
+Loading plane mappings from file "tilemaps/Title Card.bin", using compression Enigma...
+Loading 8x8 tiles from file "artnem/Title Card.bin", using compression Nemesis...
+Unable to read file "tilemaps/Title Card.bin" with compression Enigma:
+System.AggregateException: حدث خطأ واحد أو أكثر. ---> System.IO.EndOfStreamException: جرت محاولة القراءة بعد نهاية الدفق.
+   عند SonicRetro.KensSharp.BigEndian.Read2(Stream stream)
+   عند SonicRetro.KensSharp.UInt16BE_E_L_InputBitStream.Read(Int32 count)
+   عند SonicRetro.KensSharp.Enigma.Decode(Stream input, Stream output, Endianness endianness)
+   عند SonicRetro.KensSharp.Enigma.Decompress(Stream input, Stream output, Endianness endianness)
+   عند SonicRetro.KensSharp.Enigma.Decompress(String sourceFilePath, Endianness endianness)
+   عند SonicRetro.SonLVL.API.Compression.Decompress(String file, CompressionType cmp) في C:\Programs\SonLVL\SonLVLAPI\Compression.cs:السطر 51
+   عند SonicRetro.SonLVL.SonPLN.MainForm.LoadLevelLayout() في C:\Programs\SonLVL\SonPLN\MainForm.cs:السطر 400
+   عند System.Threading.Tasks.Task.InnerInvoke()
+   عند System.Threading.Tasks.Task.Execute()
+   --- نهاية تتبع بنية تخزين عناصر الاستثناء الداخلي ---
+   عند System.Threading.Tasks.Task.FastWaitAll(Task[] tasks)
+   عند System.Threading.Tasks.Parallel.Invoke(ParallelOptions parallelOptions, Action[] actions)
+   عند System.Threading.Tasks.Parallel.Invoke(Action[] actions)
+   عند SonicRetro.SonLVL.SonPLN.MainForm.backgroundLevelLoader_DoWork(Object sender, DoWorkEventArgs e) في C:\Programs\SonLVL\SonPLN\MainForm.cs:السطر 323
+---> (الاستثناء الداخلي #0) System.IO.EndOfStreamException: جرت محاولة القراءة بعد نهاية الدفق.
+   عند SonicRetro.KensSharp.BigEndian.Read2(Stream stream)
+   عند SonicRetro.KensSharp.UInt16BE_E_L_InputBitStream.Read(Int32 count)
+   عند SonicRetro.KensSharp.Enigma.Decode(Stream input, Stream output, Endianness endianness)
+   عند SonicRetro.KensSharp.Enigma.Decompress(Stream input, Stream output, Endianness endianness)
+   عند SonicRetro.KensSharp.Enigma.Decompress(String sourceFilePath, Endianness endianness)
+   عند SonicRetro.SonLVL.API.Compression.Decompress(String file, CompressionType cmp) في C:\Programs\SonLVL\SonLVLAPI\Compression.cs:السطر 51
+   عند SonicRetro.SonLVL.SonPLN.MainForm.LoadLevelLayout() في C:\Programs\SonLVL\SonPLN\MainForm.cs:السطر 400
+   عند System.Threading.Tasks.Task.InnerInvoke()
+   عند System.Threading.Tasks.Task.Execute()<---
+

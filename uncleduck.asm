@@ -258,7 +258,7 @@ GameProgram:
 
 		bsr.w	VDPSetupGame
 		bsr.w	JoypadInit
-		move.b	#id_Sega,(v_gamemode).w ; set Game Mode to Sega Screen
+		move.b	#id_Title,(v_gamemode).w ; set Game Mode to Title Card
 		jsr	MegaPCM_LoadDriver
 		lea	SampleTable,a0
 		jsr	MegaPCM_LoadSampleTable
@@ -278,11 +278,7 @@ MainGameLoop:
 ; ---------------------------------------------------------------------------
 
 GameModeArray:
-
-ptr_GM_Sega:	bra.w	GM_Sega		; Sega Screen ($00)
-
-ptr_GM_Title:	bra.w	GM_Title	; Title	Screen ($04)
-
+ptr_GM_Title:	bra.w	GM_Title
 		rts	
 ; ===========================================================================
 
@@ -1171,108 +1167,6 @@ WhiteOut_AddColour:
 ; End of function WhiteOut_AddColour
 
 ; ---------------------------------------------------------------------------
-; Palette cycling routine - Sega logo
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-PalCycle_Sega:
-		tst.b	(v_pcyc_time+1).w
-		bne.s	loc_206A
-		lea	(v_pal_dry+$20).w,a1
-		lea	(Pal_Sega1).l,a0
-		moveq	#5,d1
-		move.w	(v_pcyc_num).w,d0
-
-loc_2020:
-		bpl.s	loc_202A
-		addq.w	#2,a0
-		subq.w	#1,d1
-		addq.w	#2,d0
-		bra.s	loc_2020
-; ===========================================================================
-
-loc_202A:
-		move.w	d0,d2
-		andi.w	#$1E,d2
-		bne.s	loc_2034
-		addq.w	#2,d0
-
-loc_2034:
-		cmpi.w	#$60,d0
-		bhs.s	loc_203E
-		move.w	(a0)+,(a1,d0.w)
-
-loc_203E:
-		addq.w	#2,d0
-		dbf	d1,loc_202A
-
-		move.w	(v_pcyc_num).w,d0
-		addq.w	#2,d0
-		move.w	d0,d2
-		andi.w	#$1E,d2
-		bne.s	loc_2054
-		addq.w	#2,d0
-
-loc_2054:
-		cmpi.w	#$64,d0
-		blt.s	loc_2062
-		move.w	#$401,(v_pcyc_time).w
-		moveq	#-$C,d0
-
-loc_2062:
-		move.w	d0,(v_pcyc_num).w
-		moveq	#1,d0
-		rts	
-; ===========================================================================
-
-loc_206A:
-		subq.b	#1,(v_pcyc_time).w
-		bpl.s	loc_20BC
-		move.b	#4,(v_pcyc_time).w
-		move.w	(v_pcyc_num).w,d0
-		addi.w	#$C,d0
-		cmpi.w	#$30,d0
-		blo.s	loc_2088
-		moveq	#0,d0
-		rts	
-; ===========================================================================
-
-loc_2088:
-		move.w	d0,(v_pcyc_num).w
-		lea	(Pal_Sega2).l,a0
-		lea	(a0,d0.w),a0
-		lea	(v_pal_dry+$04).w,a1
-		move.l	(a0)+,(a1)+
-		move.l	(a0)+,(a1)+
-		move.w	(a0)+,(a1)
-		lea	(v_pal_dry+$20).w,a1
-		moveq	#0,d0
-		moveq	#$2C,d1
-
-loc_20A8:
-		move.w	d0,d2
-		andi.w	#$1E,d2
-		bne.s	loc_20B2
-		addq.w	#2,d0
-
-loc_20B2:
-		move.w	(a0),(a1,d0.w)
-		addq.w	#2,d0
-		dbf	d1,loc_20A8
-
-loc_20BC:
-		moveq	#1,d0
-		rts	
-; End of function PalCycle_Sega
-
-; ===========================================================================
-
-Pal_Sega1:	incbin	"palette\Sega1.bin"
-Pal_Sega2:	incbin	"palette\Sega2.bin"
-
-; ---------------------------------------------------------------------------
 ; Subroutines to load palettes
 
 ; input:
@@ -1322,8 +1216,7 @@ PalLoad2:
 ; ---------------------------------------------------------------------------
 ; Palette data
 ; ---------------------------------------------------------------------------
-Pal_SegaBG:	incbin	"palette\Sega Background.bin"
-Pal_Title:	incbin	"palette\Title Screen.bin"
+Pal_Title:	incbin	"palette\Title Card.bin"
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	wait for VBlank routines to complete
@@ -1342,70 +1235,7 @@ WaitForVBla:
 ; End of function WaitForVBla
 
 ; ---------------------------------------------------------------------------
-; Sega screen
-; ---------------------------------------------------------------------------
-
-GM_Sega:
-		bsr.w	PaletteFadeOut
-		lea	(vdp_control_port).l,a6
-		move.w	#$8004,(a6)	; use 8-colour mode
-		move.w	#$8200+(vram_fg>>10),(a6) ; set foreground nametable address
-		move.w	#$8400+(vram_bg>>13),(a6) ; set background nametable address
-		move.w	#$8700,(a6)	; set background colour (palette entry 0)
-		move.w	#$8B00,(a6)	; full-screen vertical scrolling
-		disable_ints
-		move.w	(v_vdp_buffer1).w,d0
-		andi.b	#$BF,d0
-		move.w	d0,(vdp_control_port).l
-		bsr.w	ClearScreen
-		locVRAM	0
-		lea	(Nem_SegaLogo).l,a0 ; load Sega	logo patterns
-		bsr.w	NemDec
-		lea	($FF0000).l,a1
-		lea	(Eni_SegaLogo).l,a0 ; load Sega	logo mappings
-		move.w	#0,d0
-		bsr.w	EniDec
-
-		copyTilemap	$FF0000,$E510,$17,7
-		copyTilemap	$FF0180,$C000,$27,$1B
-
-		moveq	#palid_SegaBG,d0
-		bsr.w	PalLoad2	; load Sega logo palette
-		move.w	#-$A,(v_pcyc_num).w
-		move.w	#0,(v_pcyc_time).w
-		move.w	#0,(v_pal_buffer+$12).w
-		move.w	#0,(v_pal_buffer+$10).w
-		move.w	(v_vdp_buffer1).w,d0
-		ori.b	#$40,d0
-		move.w	d0,(vdp_control_port).l
-Sega_WaitPal:
-		move.b	#2,(v_vbla_routine).w
-		bsr.w	WaitForVBla
-		bsr.w	PalCycle_Sega
-		bne.s	Sega_WaitPal
-
-		move.b	#$14,(v_vbla_routine).w
-		bsr.w	WaitForVBla
-		move.w	#$1E,(v_demolength).w
-
-		move.w	#$1E,(v_demolength).w
-		move.b  #81,d0
-		jsr	MegaPCM_PlaySample
-Sega_WaitEnd:
-		move.b	#2,(v_vbla_routine).w
-		bsr.w	WaitForVBla
-		tst.w	(v_demolength).w
-		beq.s	Sega_GotoTitle
-		andi.b	#btnStart,(v_jpadpress1).w ; is Start button pressed?
-		beq.s	Sega_WaitEnd	; if not, branch
-
-Sega_GotoTitle:
-		move.b	#id_Title,(v_gamemode).w ; go to title screen
-		rts	
-; ===========================================================================
-
-; ---------------------------------------------------------------------------
-; Title	screen
+; Title	Card
 ; ---------------------------------------------------------------------------
 
 GM_Title:
@@ -1418,6 +1248,9 @@ GM_Title:
 		move.w	#$9200,(a6)	; window vertical position
 		move.w	#$8B03,(a6)
 		move.w	#$8720,(a6)	; set background colour (palette line 2, entry 0)
+		move.w	(v_vdp_buffer1).w,d0
+		ori.b	#$40,d0
+		move.w	d0,(vdp_control_port).l
 		bsr.w	ClearScreen
 
 		lea	(v_objspace).w,a1
@@ -1428,56 +1261,15 @@ GM_Title:
 		move.l	d0,(a1)+
 		dbf	d1,Tit_ClrObj1	; fill object space ($D000-$EFFF) with 0
 
-		locVRAM	0
-		lea	(Nem_JapNames).l,a0 ; load Japanese credits
+		locVRAM	$0
+		lea	(Nem_Title).l,a0 ; load title patterns
 		bsr.w	NemDec
+
 		lea	($FF0000).l,a1
-		lea	(Eni_JapNames).l,a0 ; load mappings for	Japanese credits
+		lea	(Eni_Title).l,a0 ; load	title card mappings
 		move.w	#0,d0
 		bsr.w	EniDec
-
-		copyTilemap	$FF0000,$C000,$27,$1B
-
-		lea	(v_pal_dry_dup).w,a1
-		moveq	#cBlack,d0
-		move.w	#$1F,d1
-
-	Tit_ClrPal:
-		move.l	d0,(a1)+
-		dbf	d1,Tit_ClrPal	; fill palette with 0 (black)
-		jsr	(ExecuteObjects).l
-		jsr	(BuildSprites).l
-		bsr.w	PaletteFadeIn
-		disable_ints
-		locVRAM	$4000
-		lea	(Nem_TitleFg).l,a0 ; load title	screen patterns
-		bsr.w	NemDec
-		locVRAM	$6000
-		lea	(Nem_TitleSonic).l,a0 ;	load Sonic title screen	patterns
-		bsr.w	NemDec
-		locVRAM	$A200
-		lea	(Nem_TitleTM).l,a0 ; load "TM" patterns
-		bsr.w	NemDec
-		lea	(vdp_data_port).l,a6
-		locVRAM	$D000,4(a6)
-		lea	(Art_Text).l,a5	; load level select font
-		move.w	#$28F,d1
-
-	Tit_LoadText:
-		move.w	(a5)+,(a6)
-		dbf	d1,Tit_LoadText	; load level select font
-		bsr.w	PaletteFadeOut
-		disable_ints
-		bsr.w	ClearScreen
-		lea	(vdp_control_port).l,a5
-		lea	(vdp_data_port).l,a6
-		lea	(v_bgscreenposx).w,a3
-		lea	($FF0000).l,a1
-		lea	(Eni_Title).l,a0 ; load	title screen mappings
-		move.w	#0,d0
-		bsr.w	EniDec
-
-		copyTilemap	$FF0000,$C206,$21,$15
+		copyTilemap	$FF0000,$C404,$F,$C
 
 		moveq	#palid_Title,d0	; load title screen palette
 		bsr.w	PalLoad1
@@ -1485,9 +1277,7 @@ GM_Title:
 
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
-		move.w	(v_vdp_buffer1).w,d0
-		ori.b	#$40,d0
-		move.w	d0,(vdp_control_port).l
+		move.b	#1,(v_objspace).w	; SPAWN UNCLE DUCK
 		bsr.w	PaletteFadeIn
 
 Tit_MainLoop:
@@ -1495,14 +1285,14 @@ Tit_MainLoop:
 		bsr.w	WaitForVBla
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
-		andi.b	#btnStart,(v_jpadpress1).w ; check if Start is pressed
-		bne.w	Tit_Sega	; if not, branch
 		tst.w	(v_demolength).w
 		bne.w	Tit_MainLoop
-Tit_Sega:
-		move.b	#id_Sega,(v_gamemode).w ; set screen mode to Sega
+		move.b	#id_Title,(v_gamemode).w ; set screen mode to Sega
 		rts
 
+		include	"_incObj\01 Title Duck.asm"
+Map_TCard:	include	"_maps\CardDuck.asm"
+Ani_TCard:	include	"_anim\CardDuck.asm"
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Object code execution subroutine
@@ -1856,22 +1646,9 @@ BuildSpr_FlipXY:
 
 		include	"_incObj\sub FindFreeObj.asm"
 
-Nem_SegaLogo:	incbin	"artnem\Sega Logo (JP1).bin" ; large Sega logo
+Eni_Title:	incbin	"tilemaps\Title Card.bin" ; title screen Card (mappings)
 		even
-Eni_SegaLogo:	incbin	"tilemaps\Sega Logo (JP1).bin" ; large Sega logo (mappings)
-		even
-
-Eni_Title:	incbin	"tilemaps\Title Screen.bin" ; title screen foreground (mappings)
-		even
-Nem_TitleFg:	incbin	"artnem\Title Screen Foreground.bin"
-		even
-Nem_TitleSonic:	incbin	"artnem\Title Screen Sonic.bin"
-		even
-Nem_TitleTM:	incbin	"artnem\Title Screen TM.bin"
-		even
-Eni_JapNames:	incbin	"tilemaps\Hidden Japanese Credits.bin" ; Japanese credits (mappings)
-		even
-Nem_JapNames:	incbin	"artnem\Hidden Japanese Credits.bin"
+Nem_Title:	incbin	"artnem\Title Card.bin"
 		even
 
 		include "sound\MegaPCM.asm"

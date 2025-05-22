@@ -1,7 +1,7 @@
 ; ---------------------------------------------------------------------------
 ; Object pointers
 ; ---------------------------------------------------------------------------
-ptr_Obj01:		dc.l NullObject
+ptr_Obj01:		dc.l TitleDuck
 ptr_Obj02:		dc.l NullObject
 ptr_Obj03:		dc.l NullObject
 ptr_Obj04:		dc.l NullObject
