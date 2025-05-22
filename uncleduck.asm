@@ -257,10 +257,16 @@ GameProgram:
 		move.b	d0,(v_megadrive).w ; get region setting
 
 		bsr.w	VDPSetupGame
-; INSERT MEGAPCM
 		bsr.w	JoypadInit
 		move.b	#id_Sega,(v_gamemode).w ; set Game Mode to Sega Screen
-
+		jsr	MegaPCM_LoadDriver
+		lea	SampleTable,a0
+		jsr	MegaPCM_LoadSampleTable
+		tst.w	d0			; was sample table loaded successfully?
+		beq.s	.SampleTableOk		; if yes, branch
+			illegal			; for sonic 1 or your own error handler
+.SampleTableOk:
+		move.b	#$2A, (ym2612_a0).l	; restore DAC output for Mega PCM
 MainGameLoop:
 		move.b	(v_gamemode).w,d0 ; load Game Mode
 		andi.w	#$1C,d0	; limit Game Mode value to $1C max (change to a maximum of 7C to add more game modes)
@@ -278,19 +284,6 @@ ptr_GM_Sega:	bra.w	GM_Sega		; Sega Screen ($00)
 ptr_GM_Title:	bra.w	GM_Title	; Title	Screen ($04)
 
 		rts	
-; ===========================================================================
-
-CheckSumError:
-		bsr.w	VDPSetupGame
-		move.l	#$C0000000,(vdp_control_port).l ; set VDP to CRAM write
-		moveq	#$3F,d7
-
-	@fillred:
-		move.w	#cRed,(vdp_data_port).l ; fill palette with red
-		dbf	d7,@fillred	; repeat $3F more times
-
-	@endlessloop:
-		bra.s	@endlessloop
 ; ===========================================================================
 
 BusError:
@@ -488,6 +481,8 @@ VBlank:
 		andi.w	#$3E,d0
 		move.w	VBla_Index(pc,d0.w),d0
 		jsr	VBla_Index(pc,d0.w)
+VBla_Music:
+		jsr	(SendDAC).l
 
 VBla_Exit:
 		addq.l	#1,(v_vbla_count).w
@@ -504,7 +499,8 @@ VBla_Index:	dc.w VBla_00-VBla_Index, VBla_02-VBla_Index
 ; ===========================================================================
 
 VBla_00:
-		bra.w	VBla_Exit
+		bra.w	VBla_Music
+; ===========================================================================
 
 VBla_02:
 		bsr.w	sub_106E
@@ -634,6 +630,7 @@ loc_119E:
 		clr.b	($FFFFF64F).w
 		movem.l	d0-a6,-(sp)
 		bsr.w	Demo_Time
+		jsr	(SendDAC).l
 		movem.l	(sp)+,d0-a6
 		rte	
 ; End of function HBlank
@@ -1390,6 +1387,10 @@ Sega_WaitPal:
 		move.b	#$14,(v_vbla_routine).w
 		bsr.w	WaitForVBla
 		move.w	#$1E,(v_demolength).w
+
+		move.w	#$1E,(v_demolength).w
+		move.b  #81,d0
+		jsr	MegaPCM_PlaySample
 Sega_WaitEnd:
 		move.b	#2,(v_vbla_routine).w
 		bsr.w	WaitForVBla
@@ -1873,6 +1874,9 @@ Eni_JapNames:	incbin	"tilemaps\Hidden Japanese Credits.bin" ; Japanese credits (
 Nem_JapNames:	incbin	"artnem\Hidden Japanese Credits.bin"
 		even
 
+		include "sound\MegaPCM.asm"
+		include "sound\SampleTable.asm"
+		include "sound\SendDAC.asm"
 ; end of 'ROM'
 		even
 EndOfRom:
