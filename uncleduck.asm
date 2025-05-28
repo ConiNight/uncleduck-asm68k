@@ -1274,11 +1274,17 @@ GM_Title:
 		bsr.w	PalLoad1
 		move.w	#$178,(v_demolength).w ; run title screen for $178 frames
 
+		move.b	#1,(v_objspace).w	; SPAWN UNCLE DUCK
 		jsr	(ExecuteObjects).l
 		jsr	(BuildSprites).l
-		move.b	#1,(v_objspace).w	; SPAWN UNCLE DUCK
+
 		bsr.w	PaletteFadeIn
+
 		move.b	#$81,d0	; Play Title Card Music
+		btst	#6,(v_megadrive).w	; is 50hz flag set?
+		beq.s	.ntsc	; if not, send NTSC entry
+		move.b	#$83,d0	; Play Title Card Music 50hz
+.ntsc
 		jsr	MegaPCM_PlaySample
 
 Tit_MainLoop:
