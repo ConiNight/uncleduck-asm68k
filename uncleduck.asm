@@ -264,9 +264,8 @@ GameProgram:
 		jsr	MegaPCM_LoadSampleTable
 		tst.w	d0			; was sample table loaded successfully?
 		beq.s	.SampleTableOk		; if yes, branch
-			illegal			; for sonic 1 or your own error handler
+			illegal	
 .SampleTableOk:
-		move.b	#$2A, (ym2612_a0).l	; restore DAC output for Mega PCM
 MainGameLoop:
 		move.b	(v_gamemode).w,d0 ; load Game Mode
 		andi.w	#$1C,d0	; limit Game Mode value to $1C max (change to a maximum of 7C to add more game modes)
@@ -460,7 +459,7 @@ Art_Text:	incbin	"artunc\menutext.bin" ; text used in level select and debug mod
 VBlank:
 		movem.l	d0-a6,-(sp)
 		tst.b	(v_vbla_routine).w
-		beq.s	VBla_00
+		beq.w	VBla_00
 		move.w	(vdp_control_port).l,d0
 		move.l	#$40000010,(vdp_control_port).l
 		move.l	(v_scrposy_vdp).w,(vdp_data_port).l ; send screen y-axis pos. to VSRAM
@@ -478,7 +477,7 @@ VBlank:
 		move.w	VBla_Index(pc,d0.w),d0
 		jsr	VBla_Index(pc,d0.w)
 VBla_Music:
-		jsr	(SendDAC).l
+		MPCM_ensureYMWriteReady
 
 VBla_Exit:
 		addq.l	#1,(v_vbla_count).w
@@ -626,7 +625,7 @@ loc_119E:
 		clr.b	($FFFFF64F).w
 		movem.l	d0-a6,-(sp)
 		bsr.w	Demo_Time
-		jsr	(SendDAC).l
+		MPCM_ensureYMWriteReady
 		movem.l	(sp)+,d0-a6
 		rte	
 ; End of function HBlank
@@ -1279,6 +1278,8 @@ GM_Title:
 		jsr	(BuildSprites).l
 		move.b	#1,(v_objspace).w	; SPAWN UNCLE DUCK
 		bsr.w	PaletteFadeIn
+		move.b	#$81,d0	; Play Title Card Music
+		jsr	MegaPCM_PlaySample
 
 Tit_MainLoop:
 		move.b	#4,(v_vbla_routine).w
@@ -1653,7 +1654,6 @@ Nem_Title:	incbin	"artnem\Title Card.bin"
 
 		include "sound\MegaPCM.asm"
 		include "sound\SampleTable.asm"
-		include "sound\SendDAC.asm"
 ; end of 'ROM'
 		even
 EndOfRom:

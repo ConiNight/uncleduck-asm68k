@@ -81,42 +81,72 @@ copyTilemap:	macro source,destination,width,height
 		bsr.w	TilemapToVRAM
 		endm
 
-; ---------------------------------------------------------------------------
-; stop the Z80
-; ---------------------------------------------------------------------------
+; ------------------------------------------------------------------------------
+; Macro to stop Z80 and take over its bus
+; ------------------------------------------------------------------------------
+; ARGUMENTS:
+;	opBusReq? - (Optional) Custom operand for Z80_BUSREQ
+; ------------------------------------------------------------------------------
 
-stopZ80:	macro
-		move.w	#$100,(z80_bus_request).l
-		endm
+MPCM_stopZ80:	macro opBusReq
+	pusho
+	opt		l-		; make sure "@" marks local labels
 
-; ---------------------------------------------------------------------------
-; wait for Z80 to stop
-; ---------------------------------------------------------------------------
+	if narg=1
+		move.w	#$100, \opBusReq
+		@wait\@:
+			btst	#0, \opBusReq
+			bne.s	@wait\@
+	else
+		move.w	#$100, MPCM_Z80_BUSREQ
+		@wait\@:
+			btst	#0, MPCM_Z80_BUSREQ
+			bne.s	@wait\@
+	endif
 
-waitZ80:	macro
-	@wait:	btst	#0,(z80_bus_request).l
-		bne.s	@wait
-		endm
+	popo
+	endm
 
-; ---------------------------------------------------------------------------
-; reset the Z80
-; ---------------------------------------------------------------------------
+; ------------------------------------------------------------------------------
+; Macro to start Z80 and release its bus
+; ------------------------------------------------------------------------------
+; ARGUMENTS:
+;	opBusReq? - (Optional) Custom operand for Z80_BUSREQ
+; ------------------------------------------------------------------------------
 
-resetZ80:	macro
-		move.w	#$100,(z80_reset).l
-		endm
+MPCM_startZ80:	macro opBusReq
+	if narg=1
+		move.w	#0, \opBusReq
+	else
+		move.w	#0, MPCM_Z80_BUSREQ
+	endif
+	endm
 
-resetZ80a:	macro
-		move.w	#0,(z80_reset).l
-		endm
+; ------------------------------------------------------------------------------
+; Ensures Mega PCM 2 isn't busy writing to YM (other than DAC output obviously)
+; ------------------------------------------------------------------------------
+; ARGUMENTS:
+;	opBusReq? - (Optional) Custom operand for Z80_BUSREQ
+; ------------------------------------------------------------------------------
 
-; ---------------------------------------------------------------------------
-; start the Z80
-; ---------------------------------------------------------------------------
+MPCM_ensureYMWriteReady:	macro opBusReq
+	pusho
+	opt		l-		; make sure "@" marks local labels
 
-startZ80:	macro
-		move.w	#0,(z80_bus_request).l
-		endm
+	@chk_ready\@:
+		tst.b	(MPCM_Z80_RAM+Z_MPCM_DriverReady).l
+		bne.s	@ready\@
+		MPCM_startZ80 \opBusReq
+		move.w	d0, -(sp)
+		moveq	#10, d0
+		dbf		d0, *						; waste 100+ cycles
+		move.w	(sp)+, d0
+		MPCM_stopZ80 \opBusReq
+		bra.s	@chk_ready\@
+	@ready\@:
+
+	popo
+	endm
 
 ; ---------------------------------------------------------------------------
 ; disable interrupts
@@ -236,30 +266,4 @@ out_of_range:	macro exit,pos
 		sub.w	d1,d0		; approx distance between object and screen
 		cmpi.w	#128+320+192,d0
 		bhi.\0	exit
-		endm
-
-; ---------------------------------------------------------------------------
-; bankswitch between SRAM and ROM
-; (remember to enable SRAM in the header first!)
-; ---------------------------------------------------------------------------
-
-gotoSRAM:	macro
-		move.b	#1,($A130F1).l
-		endm
-
-gotoROM:	macro
-		move.b	#0,($A130F1).l
-		endm
-
-; ---------------------------------------------------------------------------
-; compare the size of an index with ZoneCount constant
-; (should be used immediately after the index)
-; input: index address, element size
-; ---------------------------------------------------------------------------
-
-zonewarning:	macro loc,elementsize
-	@end:
-		if (@end-loc)-(ZoneCount*elementsize)<>0
-		inform 1,"Size of \loc ($%h) does not match ZoneCount ($\#ZoneCount).",(@end-loc)/elementsize
-		endc
 		endm

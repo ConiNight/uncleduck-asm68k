@@ -2,7 +2,7 @@
 ; OH YEAHH IM UNCLE DUCKING IGJFGRU8
 ; save ,e ribbon girkl miku
 ; ---------------------------------------------------------------------------
-Ani_TCard:	dc.w .danc-Ani_TCard
+Ani_aTCard:	dc.w .danc-Ani_aTCard
 .danc:		dc.b 3, 0, 1, 0, 1, 2, 3, 4, 5, 4, 5, 3, 2
 		dc.b 0, 1, 2, 3, 4, 5, 4, 3, 2, 1
 		dc.b 0, 1, 2, 3, 4, 5, 4, 3, 2, 1
